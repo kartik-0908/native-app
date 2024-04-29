@@ -29,7 +29,7 @@ export default function App() {
     <Provider theme={theme}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="LoginPage"
+          initialRouteName="ChatPage"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="ChatPage" component={ChatPage} />

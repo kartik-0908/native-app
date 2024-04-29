@@ -11,8 +11,11 @@ import {
   Platform,
   Button,
   BackHandler,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "react-native-web";
+import Carousel from "../component/carousel";
 
 export default function ChatPage({ navigation }) {
   useEffect(() => {
@@ -57,6 +60,7 @@ export default function ChatPage({ navigation }) {
       scrollViewRef.current.scrollToEnd({ animated: true });
 
       // Simulate a reply
+      // Hello! How can I help you today?
       setTimeout(() => {
         const replyText =
           botResponses[inputText] || "Hello! How can I help you today?";
@@ -64,6 +68,9 @@ export default function ChatPage({ navigation }) {
           ...newMessages,
           { text: replyText, sender: "bot" },
         ];
+        if (replyText === carousel) {
+          updatedMessages.push({ isCarousel: true });
+        }
 
         setMessages(updatedMessages);
 
@@ -85,6 +92,8 @@ export default function ChatPage({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
+      <Carousel />
+      {/* <h1>Hello</h1> */}
 
       {/* Header */}
       <View style={styles.header}>
@@ -102,7 +111,36 @@ export default function ChatPage({ navigation }) {
               msg.sender === "user" ? styles.userMessage : styles.botMessage
             }
           >
-            <Text style={styles.messageText}>{msg.text}</Text>
+            {msg.sender === "user" && (
+              <View style={styles.msgContainer}>
+                <Ionicons
+                  name="person-circle-outline"
+                  size={40}
+                  color="#999"
+                  style={styles.userIcon}
+                />
+                <view style={styles.msg}>
+                  <Text style={styles.messageText}>{msg.text}</Text>
+                </view>
+              </View>
+            )}
+            {msg.sender !== "user" && (
+              <View style={styles.msgContainer}>
+                <Ionicons
+                  name="chatbubble-ellipses-outline"
+                  size={40}
+                  color="#999"
+                  style={styles.userIcon}
+                />
+                <view style={styles.msg}>
+                  {msg.isCarousel ? (
+                    <View style={styles.carouselContainer}>{carousel()}</View>
+                  ) : (
+                    <Text style={styles.messageText}>{msg.text}</Text>
+                  )}
+                </view>
+              </View>
+            )}
           </View>
         ))}
       </ScrollView>
@@ -129,6 +167,10 @@ export default function ChatPage({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  msgContainer: {
+    flexDirection: "row",
+    maxWidth: "400px",
+  },
   container: {
     flex: 1,
     backgroundColor: "#28282B", // The background is black
@@ -152,8 +194,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   userMessage: {
-    alignSelf: "flex-end",
-    backgroundColor: "#404040", // Blue color for user messages
+    alignSelf: "flex-start",
+    backgroundColor: "#28282B", // Blue color for user messages
     padding: 15,
     borderRadius: 20,
     marginVertical: 5,
@@ -161,7 +203,7 @@ const styles = StyleSheet.create({
   },
   botMessage: {
     alignSelf: "flex-start",
-    backgroundColor: "#1c1c1e", // Dark grey for bot messages
+    backgroundColor: "#28282B", // Dark grey for bot messages
     padding: 15,
     borderRadius: 20,
     marginVertical: 5,
@@ -190,5 +232,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#333", // Blue color for the send button
     borderRadius: 50,
     padding: 10,
+  },
+  userIcon: {
+    marginRight: 10,
+  },
+  msg: {
+    marginTop: 10,
+    flexWrap: "wrap",
+    flex: 1,
+    maxWidth: "100%",
   },
 });
